@@ -1,20 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
+	"github.com/astaxie/beego"
 )
 
 func main() {
-	http.HandleFunc("/hello", cgiHello)
+	controller := &MainController{}
 
-	log.Printf("http serve localhost:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Printf("http serve error %v", err)
-	}
+	beego.Router("/hello", controller, "GET:Hello")
+	beego.Run(":8080")
 }
 
-func cgiHello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello")
+// MainController:
+// The controller must implement ControllerInterface
+// Usually we extends beego.Controller
+type MainController struct {
+	beego.Controller
+}
+
+// address: http://localhost:8080/hello GET
+func (ctrl *MainController) Hello() {
+
+	// beego-example/views/hello_world.html
+	ctrl.TplName = "index.html"
+	ctrl.Data["username"] = "zhijie"
+
+	// don't forget this
+	_ = ctrl.Render()
 }
