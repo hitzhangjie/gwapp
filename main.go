@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"git.code.oa.com/gw/gwapp/app"
-	"git.code.oa.com/gw/gwapp/ctrl"
-	"git.code.oa.com/gw/gwapp/router"
-	"git.code.oa.com/gw/gwapp/session"
+	"github.com/hitzhangjie/gwapp/app"
+	"github.com/hitzhangjie/gwapp/ctrl"
+	"github.com/hitzhangjie/gwapp/router"
+	"github.com/hitzhangjie/gwapp/session"
 )
 
 func main() {

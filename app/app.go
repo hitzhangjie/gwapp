@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"git.code.oa.com/gw/gwapp/router"
-	"git.code.oa.com/gw/gwapp/session"
+	"github.com/hitzhangjie/gwapp/router"
+	"github.com/hitzhangjie/gwapp/session"
 )
 
 const (

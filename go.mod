@@ -1,4 +1,4 @@
-module git.code.oa.com/gw/gwapp
+module github.com/hitzhangjie/gwapp
 
 go 1.14
 

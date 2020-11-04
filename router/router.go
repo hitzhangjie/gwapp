@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"git.code.oa.com/gw/gwapp/ctrl"
-	"git.code.oa.com/gw/gwapp/session"
+	"github.com/hitzhangjie/gwapp/ctrl"
+	"github.com/hitzhangjie/gwapp/session"
 )
 
 var (
