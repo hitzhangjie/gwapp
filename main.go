@@ -1,30 +1,41 @@
 package main
 
 import (
-	"github.com/astaxie/beego"
+	"log"
+
+	"git.code.oa.com/gw/gwapp/app"
+	"git.code.oa.com/gw/gwapp/ctrl"
+	"git.code.oa.com/gw/gwapp/router"
+	"git.code.oa.com/gw/gwapp/session"
 )
 
 func main() {
-	controller := &MainController{}
-
-	beego.Router("/hello", controller, "GET:Hello")
-	beego.Run(":8080")
+	err := router.Register("/Hello", router.MethodGet, &HelloController{})
+	if err != nil {
+		panic(err)
+	}
+	app.Run()
 }
 
-// MainController:
-// The controller must implement ControllerInterface
-// Usually we extends beego.Controller
-type MainController struct {
-	beego.Controller
+type HelloController struct {
+	ctrl.BaseController
+	//beego.Controller
 }
 
 // address: http://localhost:8080/hello GET
-func (ctrl *MainController) Hello() {
+func (ctrl *HelloController) Hello(session *session.Session) error {
+	log.Printf("hello hello hello")
+
+	session.ResponsePayload = map[string]interface{}{
+		"retcode": 1,
+		"retmsg":  "ok",
+	}
 
 	// beego-example/views/hello_world.html
-	ctrl.TplName = "index.html"
-	ctrl.Data["username"] = "zhijie"
-
+	//ctrl.TplName = "index.html"
+	//ctrl.Data["username"] = "zhijie"
+	//
 	// don't forget this
-	_ = ctrl.Render()
+	//_ = ctrl.Render()
+	return nil
 }
