@@ -11,10 +11,19 @@ const (
 	SessionKey sessionKeyTyp = "SESSION"
 )
 
+type ContentType string
+
+const (
+	ContentTypeJSON ContentType = "application/json"
+	ContentTypeHTML ContentType = "text/html"
+)
+
 type Session struct {
 	context.Context
 
-	Request         *http.Request
-	ResponsePayload interface{}
-	ResponseWriter  http.ResponseWriter
+	Request        *http.Request
+	ResponseWriter http.ResponseWriter
+
+	ContentType  ContentType
+	ResponseData interface{}
 }

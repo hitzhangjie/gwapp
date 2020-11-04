@@ -17,6 +17,13 @@ const (
 	defaultAddress = ":8080"
 )
 
+// Register 注册HTTP接口及对应的controller
+func Register(path string, method router.Method, controller interface{}) {
+	if err := router.Register(path, method, controller); err != nil {
+		panic(err)
+	}
+}
+
 // Run 运行应用实例
 func Run(opts ...Option) error {
 	appOpts := &options{
@@ -38,35 +45,47 @@ func Run(opts ...Option) error {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 			defer cancel()
 
-			err := r.ParseForm()
-			if err != nil {
+			var (
+				buf []byte
+				err error
+			)
+
+			if err = r.ParseForm(); err != nil {
 				log.Printf("http parse form error: %v", err)
 				return
 			}
 
-			session := &session.Session{
+			s := &session.Session{
 				Context:        ctx,
 				Request:        r,
 				ResponseWriter: w,
 			}
 
-			err = fn(session)
-			if err != nil {
+			if err = fn(s); err != nil {
 				fmt.Fprintf(w, "error: %v", err)
 				return
 			}
 
-			buf, err := json.Marshal(session.ResponsePayload)
-			if err != nil {
-				log.Printf("json marshal error: %v", err)
-				return
+			switch s.ContentType {
+			case session.ContentTypeJSON:
+				if buf, err = json.Marshal(s.ResponseData); err != nil {
+					log.Printf("json marshal error: %v", err)
+					return
+				}
+			default:
+				v, ok := s.ResponseData.([]byte)
+				if !ok {
+					log.Printf("unexpected response format")
+					return
+				}
+				buf = v
 			}
 
-			n, err := session.ResponseWriter.Write(buf)
+			n, err := s.ResponseWriter.Write(buf)
 			if err != nil || n != len(buf) {
 				log.Printf("http respond write %d bytes, error: %v", n, err)
 			}
-			log.Printf("request URI: %s params: %s, %v, response: %s\n", r.RequestURI, r.Form.Encode(), string(buf))
+			log.Printf("request URI: %s, params: %s, response: %s\n", r.RequestURI, r.Form.Encode(), string(buf))
 		})
 	}
 

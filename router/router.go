@@ -58,8 +58,6 @@ func Register(path string, method Method, controller interface{}) error {
 
 	for i := 0; i < rt.NumMethod(); i++ {
 		m := rt.Method(i)
-		//log.Printf("found method: %v", m)
-
 		if m.Name != orig[1:] {
 			continue
 		}
