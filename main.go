@@ -15,33 +15,37 @@ func init() {
 }
 
 const (
-	serveStaticAddr  = ":8000"
-	serveDynamicAddr = ":8080"
+	AppUIURI        = "/"
+	serveAppUIPath  = "./static"
+	serveAppUIAddr  = ":8000"
+	serveAppSVRAddr = ":8080"
 
+	ExtJSURI       = "/extjs"
 	serveExtJSPath = "./extjs"
 )
 
 func main() {
 
-	// serve static site, on *:3000
+	// serve app frontend
 	go func() {
-		fs := http.FileServer(http.Dir(serveExtJSPath))
-		http.Handle("/", fs)
 
-		log.Printf("Listening on %s", serveStaticAddr)
-		err := http.ListenAndServe(serveStaticAddr, nil)
+		http.Handle(AppUIURI, http.FileServer(http.Dir(serveAppUIPath)))
+		http.Handle(ExtJSURI, http.FileServer(http.Dir(serveExtJSPath)))
+
+		log.Printf("Listening on %s", serveAppUIAddr)
+		err := http.ListenAndServe(serveAppUIAddr, nil)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	// serve dynamic request
-	log.Printf("Listening on %s", serveDynamicAddr)
+	// serve app backend
+	log.Printf("Listening on %s", serveAppSVRAddr)
 
 	c := &HelloController{}
 	app.Register("/Hello", router.MethodGet, c) // route /Hello to c.Hello
 	app.Register("/Index", router.MethodGet, c) // route /Index to c.Index
-	app.Run(app.WithAddress(serveDynamicAddr))
+	app.Run(app.WithAddress(serveAppSVRAddr))
 }
 
 type HelloController struct {
@@ -49,7 +53,7 @@ type HelloController struct {
 }
 
 func (ctrl *HelloController) Index(s *session.Session) error {
-	ctrl.Template = "views/index.html"
+	ctrl.Template = "static/views/index.html"
 	ctrl.Data = struct{ UserName string }{UserName: "zhijie"}
 
 	dat, err := ctrl.Render()
