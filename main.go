@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/hitzhangjie/gwapp/app"
 	"github.com/hitzhangjie/gwapp/ctrl"
@@ -10,13 +11,33 @@ import (
 )
 
 func init() {
-	log.SetFlags(log.LstdFlags|log.Llongfile)
+	log.SetFlags(log.LstdFlags | log.Llongfile)
 }
 
+const (
+	serveStaticAddr  = ":8000"
+	serveDynamicAddr = ":8080"
+)
+
 func main() {
+
+	// serve static site, on *:3000
+	go func() {
+		fs := http.FileServer(http.Dir("./extjs/ext-4.2.1/"))
+		http.Handle("/", fs)
+
+		log.Printf("Listening on %s", serveStaticAddr)
+		err := http.ListenAndServe(serveStaticAddr, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	// serve dynamic request
+	log.Printf("Listening on %s", serveDynamicAddr)
 	app.Register("/Hello", router.MethodGet, &HelloController{})
 	app.Register("/Index", router.MethodGet, &HelloController{})
-	app.Run()
+	app.Run(app.WithAddress(serveDynamicAddr))
 }
 
 type HelloController struct {
