@@ -37,8 +37,10 @@ func main() {
 
 	// serve dynamic request
 	log.Printf("Listening on %s", serveDynamicAddr)
-	app.Register("/Hello", router.MethodGet, &HelloController{})
-	app.Register("/Index", router.MethodGet, &HelloController{})
+
+	c := &HelloController{}
+	app.Register("/Hello", router.MethodGet, c) // route /Hello to c.Hello
+	app.Register("/Index", router.MethodGet, c) // route /Index to c.Index
 	app.Run(app.WithAddress(serveDynamicAddr))
 }
 
