@@ -17,13 +17,15 @@ func init() {
 const (
 	serveStaticAddr  = ":8000"
 	serveDynamicAddr = ":8080"
+
+	serveExtJSPath = "./extjs"
 )
 
 func main() {
 
 	// serve static site, on *:3000
 	go func() {
-		fs := http.FileServer(http.Dir("./extjs/ext-4.2.1/"))
+		fs := http.FileServer(http.Dir(serveExtJSPath))
 		http.Handle("/", fs)
 
 		log.Printf("Listening on %s", serveStaticAddr)
